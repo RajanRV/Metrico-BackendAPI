@@ -18,3 +18,28 @@ If you want to learn more about creating good readme files then refer the follow
 - [ASP.NET Core](https://github.com/aspnet/Home)
 - [Visual Studio Code](https://github.com/Microsoft/vscode)
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+# Metrico Backend
+
+Compliance Console API built with Express.js, Sequelize ORM, and PostgreSQL.
+
+## Tech Stack
+- Node.js + Express.js
+- Sequelize ORM
+- PostgreSQL
+
+## Getting Started
+
+### 1. Clone the repo
+git clone <repo-url>
+cd metrico-backend
+
+### 2. Install dependencies
+npm install
+
+### 3. Setup environment
+cp .env.example .env
+# Fill in your values in .env
+
+### 4. Run the server
+npm run dev
