@@ -3,13 +3,14 @@
 const bcrypt = require('bcryptjs');
 const ADMIN_ID = 'a1b2c3d4-0000-0000-0000-000000000003';
 const SUPER_ID = 'a1b2c3d4-0000-0000-0000-000000000004';
+const STAFF_ID = 'a1b2c3d4-0000-0000-0000-000000000005';
 
 module.exports = {
   async up(queryInterface) {
     const salt = await bcrypt.genSalt(12);
     const adminHash = await bcrypt.hash('Admin@1234', salt);
     const superHash = await bcrypt.hash('Super@1234', salt);
-
+    const staffHash = await bcrypt.hash('Staff@1234', salt);
 
     await queryInterface.bulkInsert('users', [
       {
@@ -38,12 +39,25 @@ module.exports = {
         created_at: new Date(),
         updated_at: new Date(),
       },
+      {
+        user_id: STAFF_ID,
+        first_name: 'Test',
+        last_name: 'Staff',
+        email: 'staff@metrico.io',
+        password_hash: staffHash,
+        role: 'Testing Staff',
+        web_access_enabled: false,
+        status: 'Active',
+        last_login_at: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     ]);
   },
 
   async down(queryInterface) {
     await queryInterface.bulkDelete('users', {
-      user_id: [ADMIN_ID, SUPER_ID],
+      user_id: [ADMIN_ID, SUPER_ID, STAFF_ID],
     })
   },
 };
