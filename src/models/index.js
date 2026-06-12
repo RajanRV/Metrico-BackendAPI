@@ -13,7 +13,20 @@ const sequelize = new Sequelize(
     port: dbConfig.port,
     dialect: dbConfig.dialect,
     logging: dbConfig.logging,
+    ...(dbConfig.dialectOptions && { dialectOptions: dbConfig.dialectOptions }),
   }
 );
 
-module.exports = { sequelize, Sequelize };
+
+const User = require('./user')(sequelize, Sequelize.DataTypes);
+const AuditLog = require('./auditLog')(sequelize, Sequelize.DataTypes);
+
+User.hasMany(AuditLog, { foreignKey: 'user_id' });
+AuditLog.belongsTo(User, { foreignKey: 'user_id' });
+
+module.exports = {
+  sequelize,
+  Sequelize,
+  User,
+  AuditLog,
+};
