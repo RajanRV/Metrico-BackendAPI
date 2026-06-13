@@ -17,16 +17,17 @@ const sequelize = new Sequelize(
   }
 );
 
+const User       = require('./User')(sequelize, Sequelize.DataTypes);
+const AuditLog   = require('./AuditLog')(sequelize, Sequelize.DataTypes);
+const TestResult = require('./TestResult')(sequelize, Sequelize.DataTypes);
 
-const User = require('./user')(sequelize, Sequelize.DataTypes);
-const AuditLog = require('./auditLog')(sequelize, Sequelize.DataTypes);
-
-User.hasMany(AuditLog, { foreignKey: 'user_id' });
-AuditLog.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(AuditLog,    { foreignKey: 'user_id' });
+AuditLog.belongsTo(User,  { foreignKey: 'user_id' });
 
 module.exports = {
   sequelize,
   Sequelize,
   User,
   AuditLog,
+  TestResult,
 };
