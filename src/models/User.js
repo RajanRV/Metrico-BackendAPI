@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
+      organization_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
+      facility_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
       first_name: {
         type: DataTypes.STRING(100),
         allowNull: false,
@@ -37,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM('Active', 'Inactive'),
+        type: DataTypes.ENUM('Active', 'Inactive', 'Invited'),
         defaultValue: 'Active',
         allowNull: false,
       },
@@ -62,8 +70,17 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  User.associate = (models) => {
+    User.belongsTo(models.Organization, { foreignKey: 'organization_id' });
+    User.belongsTo(models.Facility, { foreignKey: 'facility_id' });
+  };
+
   User.prototype.comparePassword = async function (plainPassword) {
     return bcrypt.compare(plainPassword, this.password_hash);
+  };
+
+  User.prototype.getFullName = function () {
+    return `${this.first_name} ${this.last_name}`;
   };
 
   User.hashPassword = async (plainPassword) => {

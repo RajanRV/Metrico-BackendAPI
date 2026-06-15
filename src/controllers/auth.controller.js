@@ -1,3 +1,4 @@
+'use strict';
 const crypto = require('crypto');
 const { User } = require('../models');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
@@ -14,8 +15,19 @@ const buildTokenPayload = (user) => ({
     user_id: user.user_id,
     email: user.email,
     role: user.role,
+    organization_id: user.organization_id,
+    facility_id: user.facility_id,
 });
 
+const buildUserResponse = (user) => ({
+    user_id: user.user_id,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    role: user.role,
+    organization_id: user.organization_id,
+    facility_id: user.facility_id,
+});
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -81,13 +93,7 @@ const login = async (req, res) => {
     return successResponse(res, {
         access_token: accessToken,
         refresh_token: refreshToken,
-        user: {
-            user_id: user.user_id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            role: user.role,
-        },
+        user: buildUserResponse(user),
     }, 'Login successful.');
 };
 
@@ -133,11 +139,7 @@ const refreshToken = async (req, res) => {
 const me = async (req, res) => {
     return successResponse(res, {
         user: {
-            user_id: req.user.user_id,
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            email: req.user.email,
-            role: req.user.role,
+            ...buildUserResponse(req.user),
             last_login_at: req.user.last_login_at,
         },
     }, 'User profile fetched.');

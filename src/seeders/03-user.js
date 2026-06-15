@@ -1,0 +1,160 @@
+'use strict';
+
+const bcrypt = require('bcryptjs');
+const {
+    ORG_ID,
+    FACILITY_A, FACILITY_B, FACILITY_C,
+    AVERY_ID, MARIA_ID, JAMAL_ID, PRIYA_ID, SVEN_ID, ADA_ID, DEVON_ID, LUCIA_ID,
+} = require('../utils/seederConstants');
+
+module.exports = {
+    async up(queryInterface) {
+        const salt = await bcrypt.genSalt(12);
+
+        const [averyHash, mariaHash, priyaHash, jamalHash,
+            svenHash, adaHash, devonHash, luciaHash] = await Promise.all([
+                bcrypt.hash('Avery@1234', salt),
+                bcrypt.hash('Maria@1234', salt),
+                bcrypt.hash('Priya@1234', salt),
+                bcrypt.hash('Jamal@1234', salt),
+                bcrypt.hash('Sven@1234', salt),
+                bcrypt.hash('Ada@1234', salt),
+                bcrypt.hash('Devon@1234', salt),
+                bcrypt.hash('Lucia@1234', salt),
+            ]);
+
+        await queryInterface.bulkInsert('users', [
+            {
+                user_id: AVERY_ID,
+                organization_id: ORG_ID,
+                facility_id: null,
+                first_name: 'Avery',
+                last_name: 'Thompson',
+                email: 'avery.t@metrico.io',
+                password_hash: averyHash,
+                role: 'Admin',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+
+            {
+                user_id: MARIA_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_A,
+                first_name: 'Maria',
+                last_name: 'Reyes',
+                email: 'm.reyes@metrico.io',
+                password_hash: mariaHash,
+                role: 'Supervisor',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(Date.now() - 1 * 60 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: PRIYA_ID,
+                organization_id: ORG_ID,
+                facility_id: null,
+                first_name: 'Priya',
+                last_name: 'Natarajan',
+                email: 'p.nat@metrico.io',
+                password_hash: priyaHash,
+                role: 'Supervisor',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: LUCIA_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_B,
+                first_name: 'Lucia',
+                last_name: 'Romero',
+                email: 'l.romero@metrico.io',
+                password_hash: luciaHash,
+                role: 'Supervisor',
+                web_access_enabled: false,
+                status: 'Inactive', 
+                last_login_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+
+            {
+                user_id: JAMAL_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_A,
+                first_name: 'Jamal',
+                last_name: 'Okafor',
+                email: 'j.okafor@metrico.io',
+                password_hash: jamalHash,
+                role: 'Testing Staff',
+                web_access_enabled: false,
+                status: 'Active',
+                last_login_at: new Date(Date.now() - 12 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: SVEN_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_B,
+                first_name: 'Sven',
+                last_name: 'Müller',
+                email: 's.muller@metrico.io',
+                password_hash: svenHash,
+                role: 'Testing Staff',
+                web_access_enabled: false,
+                status: 'Active',
+                last_login_at: new Date(Date.now() - 20 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: ADA_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_C,
+                first_name: 'Ada',
+                last_name: 'Chen',
+                email: 'a.chen@metrico.io',
+                password_hash: adaHash,
+                role: 'Testing Staff',
+                web_access_enabled: false,
+                status: 'Active',
+                last_login_at: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: DEVON_ID,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_C,
+                first_name: 'Devon',
+                last_name: 'Wright',
+                email: 'd.wright@metrico.io',
+                password_hash: devonHash,
+                role: 'Testing Staff',
+                web_access_enabled: false,
+                status: 'Invited',
+                last_login_at: null,
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+        ]);
+    },
+
+    async down(queryInterface) {
+        await queryInterface.bulkDelete('users', {
+            user_id: [
+                AVERY_ID, MARIA_ID, PRIYA_ID, LUCIA_ID,
+                JAMAL_ID, SVEN_ID, ADA_ID, DEVON_ID,
+            ],
+        });
+    },
+};

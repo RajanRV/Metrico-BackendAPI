@@ -1,0 +1,118 @@
+'use strict';
+
+const {
+    ORG_ID,
+    FACILITY_A, FACILITY_B, FACILITY_C,
+    DEVICE_007, DEVICE_012, DEVICE_014, DEVICE_018, DEVICE_021, DEVICE_024,
+} = require('../utils/seederConstants');
+
+const now = new Date();
+
+module.exports = {
+    async up(queryInterface) {
+        await queryInterface.bulkInsert('devices', [
+            {
+                device_id: DEVICE_007,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_C,
+                device_name: 'Pack Line Tester',
+                serial_number: 'SN-MTR-D-007',
+                location_label: 'Pack',
+                connection_status: 'Connected',
+                power_status: 'DC Power Connected',
+                firmware_version: 'v2.4.1',
+                last_connected_at: new Date(Date.now() - 3 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 3 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+            {
+                device_id: DEVICE_012,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_A,
+                device_name: 'Line 1 Tester',
+                serial_number: 'SN-MTR-D-012',
+                location_label: 'Line 1',
+                connection_status: 'Connected',
+                power_status: 'DC Power Connected',
+                firmware_version: 'v2.4.1',
+                last_connected_at: new Date(Date.now() - 8 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 8 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+            {
+                device_id: DEVICE_014,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_A,
+                device_name: 'Line 2 Tester',
+                serial_number: 'SN-MTR-D-014',
+                location_label: 'Line 2',
+                connection_status: 'Connected',
+                power_status: 'DC Power Connected',
+                firmware_version: 'v2.4.0',
+                last_connected_at: new Date(Date.now() - 12 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 12 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+            {
+                device_id: DEVICE_018,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_B,
+                device_name: 'Receiving Bay Tester',
+                serial_number: 'SN-MTR-D-018',
+                location_label: 'Receiving',
+                connection_status: 'Offline',
+                power_status: 'Device Offline',
+                firmware_version: 'v2.3.9',
+                last_connected_at: new Date(Date.now() - 4 * 60 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 4 * 60 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+            {
+                device_id: DEVICE_021,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_B,
+                device_name: 'Cold Room Tester',
+                serial_number: 'SN-MTR-D-021',
+                location_label: 'Cold Room',
+                connection_status: 'Connected',
+                power_status: 'DC Power Connected',
+                firmware_version: 'v2.4.1',
+                last_connected_at: new Date(Date.now() - 5 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 5 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+            {
+                device_id: DEVICE_024,
+                organization_id: ORG_ID,
+                facility_id: FACILITY_C,
+                device_name: 'QA Lab Tester',
+                serial_number: 'SN-MTR-D-024',
+                location_label: 'QA Lab',
+                connection_status: 'Maintenance',
+                power_status: 'DC Power Connected',
+                firmware_version: 'v2.4.1',
+                last_connected_at: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                last_sync_at: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                status: 'Active',
+                created_at: now,
+                updated_at: now,
+            },
+        ]);
+    },
+
+    async down(queryInterface) {
+        await queryInterface.bulkDelete('devices', {
+            device_id: [DEVICE_007, DEVICE_012, DEVICE_014, DEVICE_018, DEVICE_021, DEVICE_024],
+        });
+    },
+};
