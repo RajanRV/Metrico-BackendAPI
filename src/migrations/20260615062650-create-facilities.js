@@ -12,15 +12,12 @@ module.exports = {
       organization_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: {
-          model: 'organizations',
-          key:   'organization_id',
-        },
+        references: { model: 'organizations', key: 'organization_id' },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT',
       },
       facility_name: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.STRING(255),
         allowNull: false,
       },
       address: {
@@ -29,7 +26,7 @@ module.exports = {
       },
       timezone: {
         type: Sequelize.STRING(100),
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'UTC',
       },
       status: {

@@ -7,6 +7,14 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
+            organization_id: {
+                type: DataTypes.UUID,
+                allowNull: true,
+            },
+            facility_id: {
+                type: DataTypes.UUID,
+                allowNull: true,
+            },
             user_id: {
                 type: DataTypes.UUID,
                 allowNull: true,
@@ -44,6 +52,12 @@ module.exports = (sequelize, DataTypes) => {
             updatedAt: false,
         }
     );
+
+    AuditLog.associate = (models) => {
+        AuditLog.belongsTo(models.Organization, { foreignKey: 'organization_id', constraints: false });
+        AuditLog.belongsTo(models.Facility, { foreignKey: 'facility_id', constraints: false });
+        AuditLog.belongsTo(models.User, { foreignKey: 'user_id', constraints: false });
+    };
 
     return AuditLog;
 };

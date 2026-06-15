@@ -1,3 +1,5 @@
+'use strict';
+
 const { Sequelize } = require('sequelize');
 const config = require('../config/database');
 
@@ -17,17 +19,14 @@ const sequelize = new Sequelize(
   }
 );
 
-const User       = require('./User')(sequelize, Sequelize.DataTypes);
-const AuditLog   = require('./AuditLog')(sequelize, Sequelize.DataTypes);
-const TestResult = require('./TestResult')(sequelize, Sequelize.DataTypes);
+const Organization = require('./Organization')(sequelize, Sequelize.DataTypes)
+const Facility = require('./Facility')(sequelize, Sequelize.DataTypes)
+const Device = require('./Device')(sequelize, Sequelize.DataTypes)
+const User = require('./User')(sequelize, Sequelize.DataTypes)
+const AuditLog = require('./AuditLog')(sequelize, Sequelize.DataTypes)
+const TestResult = require('./TestResult')(sequelize, Sequelize.DataTypes)
 
-User.hasMany(AuditLog,    { foreignKey: 'user_id' });
-AuditLog.belongsTo(User,  { foreignKey: 'user_id' });
+const models = { Organization, Facility, Device, User, AuditLog, TestResult }
+Object.values(models).forEach(m => m.associate?.(models))
 
-module.exports = {
-  sequelize,
-  Sequelize,
-  User,
-  AuditLog,
-  TestResult,
-};
+module.exports = { sequelize, Sequelize, ...models }

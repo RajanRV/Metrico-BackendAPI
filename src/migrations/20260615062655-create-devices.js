@@ -9,47 +9,44 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      device_name: {
-        type: Sequelize.STRING(200),
-        allowNull: false,
-      },
-      serial_number: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-        unique: true,
-      },
       organization_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: {
-          model: 'organizations',
-          key:   'organization_id',
-        },
+        references: { model: 'organizations', key: 'organization_id' },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT',
       },
       facility_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: {
-          model: 'facilities',
-          key:   'facility_id',
-        },
+        references: { model: 'facilities', key: 'facility_id' },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT',
       },
+      device_name: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+      serial_number: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+        unique: true,
+      },
+      location_label: {
+        type: Sequelize.STRING(100),
+        allowNull: true,
+      },
       connection_status: {
-        type: Sequelize.ENUM('Connected', 'Offline', 'Not Detected'),
+        type: Sequelize.ENUM('Connected', 'Offline', 'Not Detected', 'Maintenance'),
         defaultValue: 'Not Detected',
         allowNull: false,
       },
       power_status: {
         type: Sequelize.ENUM('DC Power Connected', 'Device Offline', 'Device Not Detected'),
-        defaultValue: 'Device Not Detected',
-        allowNull: false,
+        allowNull: true,
       },
       firmware_version: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(100),
         allowNull: true,
       },
       last_connected_at: {
@@ -81,6 +78,8 @@ module.exports = {
     await queryInterface.addIndex('devices', ['facility_id']);
     await queryInterface.addIndex('devices', ['status']);
     await queryInterface.addIndex('devices', ['serial_number']);
+    await queryInterface.addIndex('devices', ['last_sync_at']);
+    await queryInterface.addIndex('devices', ['connection_status']);
   },
 
   async down(queryInterface) {

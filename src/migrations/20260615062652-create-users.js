@@ -9,6 +9,20 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
+      organization_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: { model: 'organizations', key: 'organization_id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
+      },
+      facility_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: { model: 'facilities', key: 'facility_id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
+      },
       first_name: {
         type: Sequelize.STRING(100),
         allowNull: false,
@@ -35,8 +49,9 @@ module.exports = {
         defaultValue: true,
         allowNull: false,
       },
+      // 'Invited' = invite sent, not yet accepted
       status: {
-        type: Sequelize.ENUM('Active', 'Inactive'),
+        type: Sequelize.ENUM('Active', 'Inactive', 'Invited'),
         defaultValue: 'Active',
         allowNull: false,
       },
@@ -59,6 +74,8 @@ module.exports = {
     await queryInterface.addIndex('users', ['email']);
     await queryInterface.addIndex('users', ['role']);
     await queryInterface.addIndex('users', ['status']);
+    await queryInterface.addIndex('users', ['organization_id']);
+    await queryInterface.addIndex('users', ['facility_id']);
   },
 
   async down(queryInterface) {

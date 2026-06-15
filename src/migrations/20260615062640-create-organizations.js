@@ -10,7 +10,7 @@ module.exports = {
         allowNull: false,
       },
       organization_name: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.STRING(255),
         allowNull: false,
       },
       status: {
