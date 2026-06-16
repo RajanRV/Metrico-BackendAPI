@@ -39,6 +39,48 @@ const authenticate = async (req, res, next) => {
     }
 };
 
+const mobileAuthenticate = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return errorResponse(res, 'Access token is missing.', 401);
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = verifyAccessToken(token);
+
+        if (decoded.platform !== 'mobile') {
+            return errorResponse(res, 'Invalid token platform.', 403);
+        }
+
+        const user = await User.findOne({
+            where: { user_id: decoded.user_id, status: 'Active' },
+            attributes: { exclude: ['password_hash'] },
+        });
+
+        if (!user) {
+            return errorResponse(res, 'User not found or account is inactive.', 401);
+        }
+
+        // Only Testing Staff can use mobile
+        if (user.role !== 'Testing Staff') {
+            return errorResponse(res, 'Mobile access is only available for Testing Staff.', 403);
+        }
+
+        req.user = user;
+        next();
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return errorResponse(res, 'Access token has expired.', 401);
+        }
+        if (err.name === 'JsonWebTokenError') {
+            return errorResponse(res, 'Invalid access token.', 401);
+        }
+        return errorResponse(res, 'Authentication failed.', 401);
+    }
+};
+
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
@@ -48,4 +90,4 @@ const authorizeRoles = (...roles) => {
     };
 };
 
-module.exports = { authenticate, authorizeRoles };
+module.exports = { authenticate, mobileAuthenticate, authorizeRoles };
