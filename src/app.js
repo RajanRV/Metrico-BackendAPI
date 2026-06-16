@@ -2,6 +2,8 @@ require('dotenv').config();
 const express      = require('express');
 const cors         = require('cors');
 const morgan       = require('morgan');
+const swaggerUi    = require('swagger-ui-express');
+const swaggerSpec  = require('./config/swagger');
 const routes       = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -15,6 +17,11 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Add this — Swagger UI only in non-production
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 app.use('/api/v1', routes);
 
