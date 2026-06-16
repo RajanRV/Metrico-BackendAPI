@@ -24,7 +24,10 @@ const options = {
             },
         },
     },
-    apis: ['./src/mobile/auth/*.js'],
+   apis: [
+       './src/mobile/auth/*.js',
+       './src/mobile/results/*.js',
+   ],
 };
 
 module.exports = swaggerJsdoc(options);
