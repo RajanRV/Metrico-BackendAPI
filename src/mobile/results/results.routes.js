@@ -3,9 +3,9 @@
 const express = require('express');
 const router = express.Router();
 
-// const { mobileAuthenticate } = require('../../middlewares/auth.middleware');
-// const { syncResultValidationRules, getResultsValidationRules, validate } = require('./results.validator');
-// const { syncMobileResult, getMobileResults } = require('./results.controller');
+const { mobileAuthenticate } = require('../../middlewares/auth.middleware');
+const { syncResultValidationRules, getResultsValidationRules, validate } = require('./results.validator');
+const { syncMobileResult, getMobileResults } = require('./results.controller');
 
 /**
  * @swagger
@@ -120,7 +120,7 @@ const router = express.Router();
  *                 - field: test_type
  *                   message: test_type must be HOCl or pH.
  */
-// router.get('/', mobileAuthenticate, getResultsValidationRules, validate, getMobileResults);
+router.get('/', mobileAuthenticate, getResultsValidationRules, validate, getMobileResults);
 
 /**
  * @swagger
@@ -221,6 +221,6 @@ const router = express.Router();
  *               success: false
  *               message: An internal server error occurred.
  */
-// router.post('/sync', mobileAuthenticate, syncResultValidationRules, validate, syncMobileResult);
+router.post('/sync', mobileAuthenticate, syncResultValidationRules, validate, syncMobileResult);
 
 module.exports = router;
