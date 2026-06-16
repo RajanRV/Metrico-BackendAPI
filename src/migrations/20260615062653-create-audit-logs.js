@@ -9,6 +9,14 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
+      organization_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+      facility_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
       user_id: {
         type: Sequelize.UUID,
         allowNull: true,
@@ -44,6 +52,8 @@ module.exports = {
       },
     });
 
+    await queryInterface.addIndex('audit_logs', ['organization_id']);
+    await queryInterface.addIndex('audit_logs', ['facility_id']);
     await queryInterface.addIndex('audit_logs', ['user_id']);
     await queryInterface.addIndex('audit_logs', ['action_type']);
     await queryInterface.addIndex('audit_logs', ['created_at']);
