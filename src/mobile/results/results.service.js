@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const { TestResult, Device, User } = require('../../models');
 const { getColorHex, getColorLabel } = require('../../utils/colorMap');
@@ -9,6 +10,7 @@ function deriveStatus(testType, value, minVal, maxVal) {
     const v = parseFloat(value);
     const min = parseFloat(minVal);
     const max = parseFloat(maxVal);
+    if (isNaN(v)) return 'Invalid Reading';
     if (v < min) return 'Below Range';
     if (v > max) return 'Above Range';
     return 'Within Range';
@@ -18,6 +20,60 @@ const DEFAULT_RANGES = {
     HOCl: { min: 0.5, max: 2.5, unit: 'ppm' },
     pH: { min: 6.0, max: 8.0, unit: 'pH' },
 };
+
+function toDateStr(date) {
+    return date.toISOString().slice(0, 10);
+}
+
+function formatRow(row) {
+    return {
+        result_id: row.result_id,
+        test_type: row.test_type,
+        estimated_value: row.estimated_value,
+        unit: row.unit,
+        detected_color_hex: row.detected_color_hex,
+        detected_color_hex_2: row.detected_color_hex_2,
+        detected_color_label: row.detected_color_label,
+        result_status: row.result_status,
+        sync_status: row.sync_status,
+        device_name: row.device_name_snapshot,
+        device_serial: row.device_serial_snapshot,
+        notes: row.notes_from_mobile,
+        is_retest: row.retest_of_result_id !== null,
+        tested_at: row.tested_at,
+        synced_at: row.synced_at,
+    };
+}
+
+function groupByDate(rows) {
+    const now = new Date();
+    const todayStr = toDateStr(now);
+    const yestStr = toDateStr(new Date(now - 86400000));
+
+    const buckets = {};
+
+    for (const row of rows) {
+        const ds = toDateStr(new Date(row.tested_at));
+        let label;
+        if (ds === todayStr) label = 'Today';
+        else if (ds === yestStr) label = 'Yesterday';
+        else label = new Date(row.tested_at)
+            .toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+            })
+            .toUpperCase();
+
+        if (!buckets[label]) buckets[label] = [];
+        buckets[label].push(formatRow(row));
+    }
+
+    return Object.entries(buckets).map(([date_label, results]) => ({
+        date_label,
+        results,
+    }));
+}
 
 const syncMobileResultService = async ({ test_type, test_value, device_name, user }) => {
 
@@ -135,4 +191,72 @@ const syncMobileResultService = async ({ test_type, test_value, device_name, use
     };
 };
 
-module.exports = { syncMobileResultService };
+const getMobileResultsService = async ({ user, test_type, result_status, search, page, limit }) => {
+
+    const pageNum = Math.max(1, parseInt(page ?? 1));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit ?? 20)));
+    const offset = (pageNum - 1) * limitNum;
+
+    const where = {
+        organization_id: user.organization_id,
+        facility_id: user.facility_id,
+        user_id: user.user_id,
+    };
+
+    if (test_type) where.test_type = test_type;
+    if (result_status) where.result_status = result_status;
+
+    if (search) {
+        const q = `%${search.trim()}%`;
+        where[Op.or] = [
+            { device_name_snapshot: { [Op.iLike]: q } },
+            { notes_from_mobile: { [Op.iLike]: q } },
+        ];
+    }
+
+    const { count, rows } = await TestResult.findAndCountAll({
+        where,
+        order: [['tested_at', 'DESC']],
+        limit: limitNum,
+        offset,
+        attributes: [
+            'result_id',
+            'test_type',
+            'estimated_value',
+            'unit',
+            'detected_color_hex',
+            'detected_color_hex_2',
+            'detected_color_label',
+            'result_status',
+            'sync_status',
+            'device_name_snapshot',
+            'device_serial_snapshot',
+            'notes_from_mobile',
+            'retest_of_result_id',
+            'tested_at',
+            'synced_at',
+        ],
+    });
+
+    const grouped = groupByDate(rows);
+    const totalPages = Math.ceil(count / limitNum);
+
+    return {
+        status: 200,
+        success: true,
+        message: 'Results fetched.',
+        data: {
+            grouped,
+            pagination: {
+                total: count,
+                page: pageNum,
+                limit: limitNum,
+                total_pages: totalPages,
+                has_next: pageNum < totalPages,
+                has_prev: pageNum > 1,
+            },
+        },
+    };
+};
+
+module.exports = { syncMobileResultService, getMobileResultsService };

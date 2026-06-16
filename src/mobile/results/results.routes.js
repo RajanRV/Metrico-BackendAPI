@@ -3,16 +3,124 @@
 const express = require('express');
 const router = express.Router();
 
-const { mobileAuthenticate }                  = require('../../middlewares/auth.middleware');
-const { syncResultValidationRules, validate } = require('./results.validator');
-const { syncMobileResult }                    = require('./results.controller');
+const { mobileAuthenticate } = require('../../middlewares/auth.middleware');
+const { syncResultValidationRules, getResultsValidationRules, validate } = require('./results.validator');
+const { syncMobileResult, getMobileResults } = require('./results.controller');
 
 /**
  * @swagger
  * tags:
  *   name: Mobile Results
- *   description: Test result sync endpoints for Testing Staff
+ *   description: Test result sync and history endpoints for Testing Staff
  */
+
+/**
+ * @swagger
+ * /mobile/results:
+ *   get:
+ *     tags: [Mobile Results]
+ *     summary: Get result history
+ *     description: Returns the authenticated user's test results grouped by date (Today / Yesterday / Mon, Jun 8).
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: test_type
+ *         schema:
+ *           type: string
+ *           enum: [HOCl, pH]
+ *         description: Filter by test type
+ *       - in: query
+ *         name: result_status
+ *         schema:
+ *           type: string
+ *           enum: [Within Range, Below Range, Above Range, Invalid Reading]
+ *         description: Filter by result status
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by device name or notes
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *     responses:
+ *       200:
+ *         description: Results fetched successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: Results fetched.
+ *               data:
+ *                 grouped:
+ *                   - date_label: Today
+ *                     results:
+ *                       - result_id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+ *                         test_type: HOCl
+ *                         estimated_value: "1.8200"
+ *                         unit: ppm
+ *                         detected_color_hex: "#e8b94a"
+ *                         detected_color_hex_2: "#4a8fcb"
+ *                         detected_color_label: null
+ *                         result_status: Within Range
+ *                         sync_status: Synced
+ *                         device_name: Line 2 Tester
+ *                         device_serial: SN-MTR-D-014
+ *                         notes: null
+ *                         is_retest: false
+ *                         tested_at: "2026-06-16T08:40:27.117Z"
+ *                         synced_at: "2026-06-16T08:40:27.117Z"
+ *                   - date_label: Yesterday
+ *                     results:
+ *                       - result_id: 9ab12cd3-0000-0000-0000-000000000001
+ *                         test_type: HOCl
+ *                         estimated_value: "0.4200"
+ *                         unit: ppm
+ *                         detected_color_hex: "#fde9b8"
+ *                         detected_color_hex_2: "#bcd9ec"
+ *                         detected_color_label: null
+ *                         result_status: Below Range
+ *                         sync_status: Synced
+ *                         device_name: Line 1 Tester
+ *                         device_serial: SN-MTR-D-012
+ *                         notes: Re-test required
+ *                         is_retest: false
+ *                         tested_at: "2026-06-15T08:52:00.000Z"
+ *                         synced_at: "2026-06-15T08:52:00.000Z"
+ *                 pagination:
+ *                   total: 24
+ *                   page: 1
+ *                   limit: 20
+ *                   total_pages: 2
+ *                   has_next: true
+ *                   has_prev: false
+ *       401:
+ *         description: Missing or expired token
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Unauthorized. Token is missing or expired.
+ *       422:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Validation failed.
+ *               errors:
+ *                 - field: test_type
+ *                   message: test_type must be HOCl or pH.
+ */
+router.get('/', mobileAuthenticate, getResultsValidationRules, validate, getMobileResults);
 
 /**
  * @swagger
