@@ -5,6 +5,7 @@ const {
     ORG_ID,
     FACILITY_A, FACILITY_B, FACILITY_C,
     AVERY_ID, MARIA_ID, JAMAL_ID, PRIYA_ID, SVEN_ID, ADA_ID, DEVON_ID, LUCIA_ID,
+    RAJAN_ID, PURVESH_ID, SIMANT_ID,
 } = require('../utils/seederConstants');
 
 module.exports = {
@@ -12,7 +13,8 @@ module.exports = {
         const salt = await bcrypt.genSalt(12);
 
         const [averyHash, mariaHash, priyaHash, jamalHash,
-            svenHash, adaHash, devonHash, luciaHash] = await Promise.all([
+            svenHash, adaHash, devonHash, luciaHash,
+            rajanHash, purveshHash, simantHash] = await Promise.all([
                 bcrypt.hash('Avery@1234', salt),
                 bcrypt.hash('Maria@1234', salt),
                 bcrypt.hash('Priya@1234', salt),
@@ -21,6 +23,9 @@ module.exports = {
                 bcrypt.hash('Ada@1234', salt),
                 bcrypt.hash('Devon@1234', salt),
                 bcrypt.hash('Lucia@1234', salt),
+                bcrypt.hash('Rajan@1234', salt),
+                bcrypt.hash('Purvesh@1234', salt),
+                bcrypt.hash('Simant@1234', salt),
             ]);
 
         await queryInterface.bulkInsert('users', [
@@ -39,7 +44,51 @@ module.exports = {
                 created_at: new Date(),
                 updated_at: new Date(),
             },
-
+            {
+                user_id: RAJAN_ID,
+                organization_id: ORG_ID,
+                facility_id: null,
+                first_name: 'Rajan',
+                last_name: '',
+                email: 'rajan@metrico.io',
+                password_hash: rajanHash,
+                role: 'Admin',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: PURVESH_ID,
+                organization_id: ORG_ID,
+                facility_id: null,
+                first_name: 'Purvesh',
+                last_name: '',
+                email: 'purvesh@metrico.io',
+                password_hash: purveshHash,
+                role: 'Admin',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                user_id: SIMANT_ID,
+                organization_id: ORG_ID,
+                facility_id: null,
+                first_name: 'Simant',
+                last_name: '',
+                email: 'simant@metrico.io',
+                password_hash: simantHash,
+                role: 'Admin',
+                web_access_enabled: true,
+                status: 'Active',
+                last_login_at: new Date(),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
             {
                 user_id: MARIA_ID,
                 organization_id: ORG_ID,
@@ -152,7 +201,8 @@ module.exports = {
     async down(queryInterface) {
         await queryInterface.bulkDelete('users', {
             user_id: [
-                AVERY_ID, MARIA_ID, PRIYA_ID, LUCIA_ID,
+                AVERY_ID, RAJAN_ID, PURVESH_ID, SIMANT_ID,
+                MARIA_ID, PRIYA_ID, LUCIA_ID,
                 JAMAL_ID, SVEN_ID, ADA_ID, DEVON_ID,
             ],
         });

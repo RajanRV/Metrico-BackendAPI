@@ -9,6 +9,8 @@ module.exports = {
     port: parseInt(process.env.DB_PORT) || 5432,
     dialect: 'postgres',
     logging: false,
+    seederStorage: 'sequelize',
+    seederStorageTableName: 'SequelizeMeta',
   }
 };
  

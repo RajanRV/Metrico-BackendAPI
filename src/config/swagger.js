@@ -4,9 +4,9 @@ const options = {
     definition: {
         openapi: '3.0.3',
         info: {
-            title: 'Metrico Mobile API',
+            title: 'Metrico API',
             version: '1.0.0',
-            description: 'Mobile authentication API for Testing Staff',
+            description: 'Metrico API documentation — Web (Admin/Supervisor) and Mobile (Testing Staff) endpoints',
         },
         servers: [
             {
@@ -25,6 +25,7 @@ const options = {
         },
     },
    apis: [
+       './src/routes/*.js',
        './src/mobile/auth/*.js',
        './src/mobile/results/*.js',
    ],
