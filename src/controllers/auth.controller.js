@@ -44,7 +44,7 @@ const login = async (req, res) => {
         return errorResponse(res, 'Invalid email or password.', 401);
     }
 
-    if (user.status !== 'Active') {
+    if (user.status === 'Inactive') {
         await writeAuditLog({
             action_type: AUDIT.USER_LOGIN_FAILED,
             user,
@@ -75,7 +75,11 @@ const login = async (req, res) => {
         return errorResponse(res, 'Invalid email or password.', 401);
     }
 
-    await user.update({ last_login_at: new Date() });
+    const updates = { last_login_at: new Date() };
+    if (user.status === 'Invited') {
+        updates.status = 'Active';
+    }
+    await user.update(updates);
 
     const payload = buildTokenPayload(user);
     const accessToken = signAccessToken(payload);

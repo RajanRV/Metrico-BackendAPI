@@ -25,7 +25,7 @@ const mobileLoginService = async ({ email, password, ip }) => {
     }
 
     // 3. Deactivated user
-    if (user.status !== 'Active') {
+    if (user.status === 'Inactive') {
         return {
             status: 403,
             success: false,
@@ -61,8 +61,12 @@ const mobileLoginService = async ({ email, password, ip }) => {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    // 7. Stamp last login
-    await user.update({ last_login_at: new Date() });
+    // 7. Activate on first login + stamp last login
+    const updates = { last_login_at: new Date() };
+    if (user.status === 'Invited') {
+        updates.status = 'Active';
+    }
+    await user.update(updates);
 
     // 8. Audit log
     await writeAuditLog({
