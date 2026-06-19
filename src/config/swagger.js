@@ -10,8 +10,8 @@ const options = {
         },
         servers: [
             {
-                url: `http://localhost:${process.env.PORT || 5000}/api/v1`,
-                description: 'Local Development',
+                url: 'https://6fm29vpijk.execute-api.us-east-1.amazonaws.com/api/v1',
+                description: 'Live (AWS)',
             },
         ],
         components: {
