@@ -19,9 +19,9 @@ app.get('/health', (req, res) => {
 });
 
 // Add this — Swagger UI only in non-production
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-}
+// }
 
 app.use('/api/v1', routes);
 
