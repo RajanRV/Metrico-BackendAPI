@@ -20,6 +20,7 @@ if (isConfigured) {
         host: SMTP_HOST,
         port: Number(SMTP_PORT),
         secure: Number(SMTP_PORT) === 465,
+        family: 4, // Force IPv4
         auth: { user: SMTP_USER, pass: SMTP_PASS },
         connectionTimeout: 8000,
         greetingTimeout: 8000,
